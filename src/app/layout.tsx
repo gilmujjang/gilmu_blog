@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import './globals.css'
-import Header from "@/src/components/Header/Header";
+import Header from "@/components/Header";
 
 export const metadata: Metadata = {
   title: "길무짱의 블로그",
