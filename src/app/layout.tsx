@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import './globals.css'
 import Header from "@/components/Header";
 import { Noto_Sans_KR } from 'next/font/google';
+import { SideBar } from "@/components/SideBar/SideBar";
 
 const notoSansKr = Noto_Sans_KR({
   weight: ['500'],
@@ -22,7 +23,11 @@ export default function RootLayout({
     <html lang="ko">
       <body className={notoSansKr.className}>
         <Header />
-        {children}</body>
+        <div style={{ display: 'flex' }}>
+          <SideBar />
+          {children}
+        </div>
+      </body>
     </html>
   );
 }
