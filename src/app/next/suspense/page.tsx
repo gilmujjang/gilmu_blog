@@ -1,6 +1,6 @@
 import React from 'react';
 import { Delay, Suspense } from '@suspensive/react';
-import AwaitComponent from './AwaitComponent';
+import AwaitComponent from '../../../page/next/components/AwaitComponent';
 
 export default function page() {
   return (

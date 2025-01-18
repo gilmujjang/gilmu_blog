@@ -1,4 +1,4 @@
-import Card from '@/components/Card';
+import Card from "@/page/next/components/Card";
 import { pause, simulateProbability } from '@/lib/mocking'
 import React from 'react'
 

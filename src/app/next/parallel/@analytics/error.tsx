@@ -1,6 +1,6 @@
 'use client' // Error components must be Client Components
 
-import Card from '@/components/Card'
+import Card from "@/page/next/components/Card";
 import { useEffect } from 'react'
 
 export default function Error({
@@ -14,7 +14,7 @@ export default function Error({
 
   return (
     <Card style={{ backgroundColor: 'purple' }}>
-      <h2 style={{ color: 'white' }}>Team Error!</h2>
+      <h2 style={{ color: 'white' }}>Analytics Error!</h2>
     </Card>
   )
 }
