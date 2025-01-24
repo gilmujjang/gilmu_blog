@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
-import './globals.css'
+import type { Metadata } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "길무짱의 블로그",
-  description: "길무짱의 블로그",
+  title: '길무짱의 블로그',
+  description: '길무짱의 블로그',
 };
 
 export default function RootLayout({
@@ -13,9 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body>
-          {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
