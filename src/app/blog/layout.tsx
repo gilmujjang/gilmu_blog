@@ -1,3 +1,4 @@
+import Header from '@/feature/header';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -11,10 +12,8 @@ export default function BlogLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main
-      className="bg-gray-100 dark:bg-gray-900 flex justify-center"
-      style={{ flex: 1, width: '100%' }}
-    >
+    <main>
+      <Header />
       {children}
     </main>
   );
