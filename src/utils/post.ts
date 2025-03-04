@@ -4,7 +4,7 @@ import matter from 'gray-matter';
 import dayjs from 'dayjs';
 import { sync } from 'glob';
 import readingTime from 'reading-time';
-import { TPost, TPostAbstract, TPostContent } from '@/types/post';
+import { TCategory, TPost, TPostAbstract, TPostContent } from '@/types/post';
 
 const BASE_PATH = '/src/blog';
 const POSTS_PATH = path.join(process.cwd(), BASE_PATH);
@@ -18,7 +18,7 @@ export const parsePostAbstract = (postPath: string): TPostAbstract => {
   const [category, slug] = filePath.split('/');
   const url = `/blog/${category}/${slug}`;
 
-  return { url, category, slug };
+  return { url, category: category as TCategory, slug };
 };
 
 export const parsePostContent = async (
@@ -30,7 +30,8 @@ export const parsePostContent = async (
   const title = data['title'];
   const keywords = data['keywords']?.map((keyword: string) => keyword.trim());
   const createdAt = data['createdAt'];
-  const dateString = dayjs(data.date).locale('ko').format('YYYY-MM-DD');
+  const description = data['description'];
+  const thumbnail = data['thumbnail'];
   const readingMinutes = Math.ceil(readingTime(content).minutes);
 
   return {
@@ -38,6 +39,8 @@ export const parsePostContent = async (
     title,
     keywords,
     createdAt,
+    description,
+    thumbnail,
     readingMinutes,
     content,
   };
