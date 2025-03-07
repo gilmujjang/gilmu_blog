@@ -32,7 +32,7 @@ const Introduce = () => {
             </div>
           </div>
         </div>
-        <p>대충 자기소개 100자정도</p>
+        <p></p>
       </div>
     </section>
   );

@@ -9,7 +9,8 @@ const WorkExperience = () => {
       <SectionTitle>Work Experience</SectionTitle>
       <div className="flex flex-col gap-16">
         <div className="flex flex-col md:flex-row gap-4 md:gap-0">
-          <div className="flex md:flex-col items-center md:items-start mr-4 gap-4">
+          <div>
+          <div className="flex md:flex-col items-center md:items-start mr-4 gap-4 md:sticky md:top-12">
             <Image
               src="/images/nemo.png"
               alt="네모앱 로고"
@@ -22,6 +23,7 @@ const WorkExperience = () => {
               job="Frontend Developer"
               start="2022.04"
             />
+          </div>
           </div>
           <div>
             <div className="md:flex items-center gap-4 w-full mb-2 hidden">
@@ -48,6 +50,10 @@ const WorkExperience = () => {
                 }
                 techStack={['ReactNative']}
                 experiences={[
+                  {
+                    title: '코드푸시 서비스 종료 대응',
+                    description:'AppCenter의 서비스 종료에 대한 대응으로 js 번들을 Amazon S3에 적재해서 AppCenter의 API 서버가 아닌 CDN을 사용해서 더 빠른 (대충 몇초에서 몇초로 줄였다는 내용), 더 작은 번들 크기, 더 낮은 에러율을 구현할예정'
+                  },
                   {
                     title: '배포 자동화',
                     description:
