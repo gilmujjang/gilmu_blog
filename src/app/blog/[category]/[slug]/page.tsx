@@ -1,4 +1,4 @@
-import PostDetail from '@/page/blog/components/PostDetail';
+import PostDetail from '@/page/blog/feature/PostDetail';
 import SandBox from '@/page/blog/components/SandBox';
 import { getPost } from '@/utils/post';
 

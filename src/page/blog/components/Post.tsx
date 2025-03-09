@@ -18,24 +18,25 @@ export default function Post(post: TPost) {
   } = post;
 
   return (
-    <Link href={`/blog/${category}/${slug}`}>
-      <div className="border rounded-lg  hover:shadow-lg transition-shadow flex">
-        <Image
-          src={`/thumbnail/${thumbnail}`}
-          alt="Thumbnail"
-          width={200}
-          height={200}
-          className=" rounded-l-lg lg:w-[300px] lg:h-[200px]"
-        />
-        <div className="p-4">
-          <CategoryTag type={'develope'} />
-          <h2 className="text-xl font-semibold mb-2">{title}</h2>
-          <p className="text-sm text-gray-600">{description}</p>
-          <p className="text-sm text-gray-600">{createdAt}</p>
-          {category !== 'playground' && (
-            <p className="text-sm text-gray-600">{readingMinutes} mins</p>
-          )}
-        </div>
+    <Link
+      href={`/blog/${category}/${slug}`}
+      className="flex border rounded-lg hover:shadow-lg transition-shadow bg-white dark:bg-gray-900"
+    >
+      <Image
+        src={`/thumbnail/${thumbnail}`}
+        alt="Thumbnail"
+        width={200}
+        height={200}
+        className="rounded-l-lg lg:w-[300px] lg:h-[200px]"
+      />
+      <div className="p-4 text-gray-800 dark:text-gray-200 transition-colors duration-1000">
+        <CategoryTag type={'develope'} />
+        <h2 className="text-xl font-semibold mb-2">{title}</h2>
+        <p className="text-sm">{description}</p>
+        <p className="text-sm">{createdAt}</p>
+        {category !== 'playground' && (
+          <p className="text-sm">{readingMinutes} mins</p>
+        )}
       </div>
     </Link>
   );

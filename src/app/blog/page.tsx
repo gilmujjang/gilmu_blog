@@ -1,5 +1,4 @@
-import BlogPost from '@/page/blog/feature/BlogPost';
-import { getPost, parsePostAbstract, parsePostContent } from '@/utils/post';
+import BlogPostList from '@/page/blog/feature/BlogPostList';
 
 export default function Home() {
   return (
@@ -8,7 +7,7 @@ export default function Home() {
      flex justify-center items-center
       w-full h-[calc(100vh-64px)] gap-16"
     >
-      <BlogPost />
+      <BlogPostList />
     </section>
   );
 }

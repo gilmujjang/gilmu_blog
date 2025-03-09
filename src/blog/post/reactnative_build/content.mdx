@@ -1,0 +1,88 @@
+---
+title: 'ReactNative 빌드 살펴보기'
+description: 'js bundle 파일을 중심으로 훑어봅니다'
+keywords: ['Reactnative', 'hermes', 'bundle']
+createdAt: '2025-02-05'
+thumbnail: 'react-native-build-thumbnail.png'
+---
+
+React Native의 빌드 과정은 JS 코드와 네이티브 코드를 각각의 플랫폼으로 빌드하는 복잡한 과정이다. 걸핏하면 잘 되던 빌드가 안되기도 하고 스토어에서 최소 지원버전을 매년 올리기도 한다.
+React Native의 핵심 개발은 JS 부분이다. 네이티브 코드로 개발이 필요한 경우도 있기는 하지만 간단한 앱의 경우일수록 네이티브 부분은 번거로운 존재이다.
+React Native는 아무래도 React와 비슷한 점이 많기 때문에 웹개발자들이 쉽게 진입했는데 swift, objective-c, kotlin, java, gradle, maven 이런걸 다루다 보면 머리가 다 빠져버린다.
+그래서 네이티브 코드를 최대한 보이지 않게 Expo는 CNS 같은 기능을 만들기도 했다.
+어쨌든 이번 포스트에서는 React Native 빌드 중 JS bundle 에 대해 살펴보겠다.
+
+React Native로 앱을 개발하면서 수많은 JS, JSX, 이미지, 아이콘 등을 추가하는데 이 JS 파일들과 assets을 하나로 번들링 해주는 존재가 Bundler 이다.
+웹 개발에서는 WebPack, Vite, grunt, rollup 등 개성있는 번들러들이 많지만 React Native를 사용할 때는 선택사항에 제약이 많아서 대부분 Metro를 사용한다.
+우리가 정성스럽게 개발한 React native 코드의 js 부분은 이렇게 bundle 파일로 압축된다.
+
+<MDXImage
+  src="/post/reactnative_build/make_bundle.png"
+  alt="make bundle file"
+/>
+
+babel로 ES6+ 코드를 오래된 버전(보톤 ES5)으로 변환, 압축, 난독화 한다.
+그러면 이렇게 흉측한 bundle 파일이 생성된다.
+
+<MDXImage
+  src="/post/reactnative_build/bundlefile.png"
+  alt="bundle file sample"
+/>
+
+빌드 할 때마다 bundle 파일을 만들기도 하지만 궁금하면 아래 명령어로 만들어 볼 수도 있다.
+"build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
+"build:android": "react-native bundle --platform android --dev false --entry-file='index.js' --bundle-output='./android/app/src/main/assets/index.android.bundle' --assets-dest android/app/src/main/res/"
+
+보통 웹개발에서는 JS로 번들파일을 생성하면 이걸 서버에 올리고 브라우저가 받아서 실행한다.
+크롬 브라우저의 V8 엔진을 예시로 보겠다.
+
+<MDXImage src="/post/reactnative_build/v8engine.png" alt="v8 engine" />
+JavaScript는 기본적으로 interpreter 언어이지만 V8 엔진을 돌리면서 부분 최적화를
+실행한다. V8 엔진의 interpreter의 이름은 ignition이고 최적화 컴파일러의 이름은
+Turbofan 이다. 엔진에서 ignition은 점화 시스템이고 Turbofan은 비행기 엔진에 많이
+사용되는건데 공기를 압축해서 엔진의 효율을 올려주는 역할을 한다. 네이밍에
+진심인것 같다.
+
+React Native 에서도 디버깅 환경에서 크롬 브라우저를 사용하는데 그럴때도 이 V8 엔진을 사용한다.
+브라우저에서 부분 컴파일을 하는것도 컴파일이라고 JIT(Just In Time) Compiler라고 한다.
+그런데 어디가서 JS도 컴파일 한다고 하면 혼날것 같다...
+
+<MDXImage src="/post/reactnative_build/hermes.png" alt="hermes engine" />
+반면에 hermes는 JS bundle을 bytecode로 컴파일 한다. 이전 React native jsc등의
+JIT 컴파일러를 사용했는데 이제는 hermes가 국룰이다. 미리 컴파일 하는 방식을
+AOT(Ahead of Time) Compiler라고 한다. 미리 컴파일한 AOT가 JIT보다 무조건 더
+좋을것 같다고 생각했는데 JIT가 동적으로 최적화를 하기 때문에 성능면에서 좋다고
+한다. 하지만 동적으로 최적화 작업을 하기 때문에 메모리 사용량이 더 많다. 즉
+성능과 메모리의 트레이드 오ퟬ 관계인 것이다. Hermes의 H를 보면 알겠지만 그리스
+신화의 헤르메스 이다. 겁나 빨라서 헤르메스 인가보다. 재미있는 깨알 사실은 Hermes
+engine의 가비지 컬렉터 이름은 hades 이다. 나도 회사 프로젝트에서 변수명을 지을때
+이렇게 간지나게 지어서 ninja coder가 되고싶다.
+
+<MDXImage
+  src="/post/reactnative_build/javascript_runtime.png"
+  alt="javascript runtime"
+/>
+위에서 만든 bundle 파일을 .apk, .ipa 파일로 패키징 해서 우리의 핸드폰에 앱을
+설치할 수 있다. 그럼 이 JS 번들 파일은 JavaScript이므로 JavaScript Runtime에서
+실행된다. 그런데 우리는 React Native에서 View, Text와 같은 React Native의 태그를
+사용했다. 이것들은 React에도 존재하지 않고 swift나 kotlin으로 개발 할 때도
+존재하지 않는 태그들이다. 카메라, GPS, 전화걸기 등의 기능도 물론 네이티브
+기능이지만 화면을 렌더링 하는것 조차 네이티브의 기능을 사용한다. View는 ios는
+UIView로, android에서는 LinearLayout으로 대체된다.
+
+<MDXImage
+  src="/post/reactnative_build/debug_workflow.png"
+  alt="debug workflow"
+/>
+
+디버그 환경에서 전체 flow다.
+시뮬레이터 띄워놓고 개발할때 새로고침 하면 앱에 실시간으로 적용되는 Hot reloading이 가능한 이유가 Metro bundler가 실시간으로 빠르게 bundle file을 만들어서 server에 올리고 JavaScript Engine이 apk에 패키징된 bundle file이 아니라 Metro server에 올라온 bundle file을 실행하기 때문에 가능하다.
+
+<MDXImage
+  src="/post/reactnative_build/release_workflow.png"
+  alt="release workflow"
+/>
+
+Release 환경에서의 flow다.
+위에서 말한 bundle 파일을 이거썼다 저거썼다 하는 앱이지만 웹 같은 특성 덕분에 CodePush가 가능하다.
+패키징된 앱을 분해해서 Bundle 파일을 교체할 수는 없지만 그냥 앱 밖의 저장소에 Bundle 파일을 저장하고 그걸 대신 사용한다.
