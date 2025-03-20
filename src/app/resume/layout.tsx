@@ -1,4 +1,3 @@
-import Header from '@/feature/header';
 import type { Metadata } from 'next';
 import Footer from './feature/Footer';
 

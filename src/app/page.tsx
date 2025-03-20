@@ -1,7 +1,7 @@
 export default function Home() {
   return (
     <main>
-      <h2>resume</h2>
+      <h2>민무길</h2>
     </main>
   );
 }

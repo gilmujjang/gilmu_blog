@@ -27,7 +27,7 @@ const WorkExperience = () => {
             <div className="md:flex items-center gap-4 w-full mb-2 hidden">
               <div className="h-[1px] bg-GRAY_HEAVY/20 flex-grow" />
               <span className="text-GRAY_HEAVY p-2 text-center italic">
-                MAU NN만의 상가, 사무실 1위 프롭테크앱 네모!
+                MAU 6만 상가, 사무실 1위 프롭테크앱 네모!
               </span>
             </div>
             <div className="flex flex-col gap-8">
@@ -44,7 +44,7 @@ const WorkExperience = () => {
                   },
                 ]}
                 productDescription={
-                  'MAU NN만의 상가, 사무실 1위 프롭테크앱 네모! 2023년 부터 단독으로 네모앱의 신규 프로젝트 개발, 유지 보수, 스토어 관리등의 업무를 진행 했습니다. 개발환경, 디펜던시 마이그레이션 및 전체 리팩토링 등의 업무도 진행했습니다.'
+                  'MAU 6만 상가, 사무실 1위 프롭테크앱 네모! 2023년 부터 단독으로 네모앱의 신규 프로젝트 개발, 유지 보수, 스토어 관리등의 업무를 진행 했습니다. 개발환경, 디펜던시 마이그레이션 및 전체 리팩토링 등의 업무도 진행했습니다.'
                 }
                 techStack={['ReactNative']}
                 experiences={[

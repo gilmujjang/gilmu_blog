@@ -19,7 +19,7 @@ export default function Post(post: TPost) {
 
   return (
     <Link
-      href={`/blog/${category}/${slug}`}
+      href={`/${category}/${slug}`}
       className="flex border rounded-lg hover:shadow-lg transition-shadow bg-white dark:bg-gray-900"
     >
       <Image
