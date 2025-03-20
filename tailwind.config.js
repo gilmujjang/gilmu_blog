@@ -1,7 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
-  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
+  content: [
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/**/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
   theme: {
     extend: {
       // NOTE: 본 템플릿은 대부분이 모노톤으로 이루어져 있습니다. primary 컬러만 수정하여 사용하시는 것을 권장드립니다.
