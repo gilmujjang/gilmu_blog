@@ -5,19 +5,30 @@ import GitHubIcon from 'public/icons/github-mark.svg';
 import ResumeIcon from 'public/icons/file.svg';
 
 export default function Header() {
+  const __DEV__ = process.env.NODE_ENV === 'development';
   return (
     <div className="w-full">
       <div className="h-[64px] flex items-center justify-between font-medium px-4">
         <span>
           <a
             className="rounded-full px-4 py-1 text-center text-sm transition-colors hover:text-primary bg-muted font-medium text-primary"
-            href="/blog"
+            href={
+              __DEV__ ? 'http://blog.localhost:3000' : 'https://blog.mugil.dev'
+            }
           >
             민무길 블로그
           </a>
         </span>
         <span className="flex items-center gap-4">
-          <ExternalLink title="Resume" href={'/resume'} icon={ResumeIcon} />
+          <ExternalLink
+            title="Resume"
+            href={
+              __DEV__
+                ? 'http://resume.localhost:3000'
+                : 'https://resume.mugil.dev'
+            }
+            icon={ResumeIcon}
+          />
           <ExternalLink
             title="GitHub"
             href={'https://github.com/gilmujjang'}

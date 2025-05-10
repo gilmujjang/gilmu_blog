@@ -1,7 +1,7 @@
-import Image from 'next/image';
 import React, { ReactNode } from 'react';
 
 const Introduce = () => {
+  const __DEV__ = process.env.NODE_ENV === 'development';
   return (
     <section>
       <div className="flex flex-col gap-8">
@@ -26,13 +26,20 @@ const Introduce = () => {
               <ContactItem href="https://github.com/gilmujjang">
                 Github
               </ContactItem>
-              <ContactItem href="/blog" newTab={false}>
+              <ContactItem
+                href={
+                  __DEV__
+                    ? 'http://blog.localhost:3000'
+                    : 'https://blog.mugil.dev'
+                }
+                newTab={false}
+              >
                 Blog
               </ContactItem>
             </div>
           </div>
         </div>
-        <p>대충 자기소개 100자정도</p>
+        <p>해내는 개발자?</p>
       </div>
     </section>
   );
