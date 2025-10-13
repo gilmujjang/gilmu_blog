@@ -39,7 +39,7 @@ const Introduce = () => {
             </div>
           </div>
         </div>
-        <p>해내는 개발자?</p>
+        <p></p>
       </div>
     </section>
   );
@@ -64,7 +64,7 @@ const ContactItem = ({
       className="w-fit"
     >
       <span
-        className="px-1 text-xs dark:text-GRAY_HEAVY hover:text-BLACK dark:hover:text-BLACK text-BLACK 
+        className="px-1 text-xs text-BLACK dark:text-GRAY_LIGHT hover:text-BLACK dark:hover:text-BLACK 
       hover:text-PRIMARY_HEAVY dark:hover:text-PRIMARY_HEAVY"
       >
         {children}
