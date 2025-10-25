@@ -29,7 +29,7 @@ export default function Post(post: TPost) {
         height={200}
         className="rounded-l-lg lg:w-[300px] lg:h-[200px]"
       />
-      <div className="p-4 text-gray-800 dark:text-gray-200 transition-colors duration-1000">
+      <div className="p-4 transition-colors duration-1000">
         <CategoryTag type={'develope'} />
         <h2 className="text-xl font-semibold mb-2">{title}</h2>
         <p className="text-sm">{description}</p>

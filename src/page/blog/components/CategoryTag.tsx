@@ -16,7 +16,7 @@ const CategoryTag = ({ type }: Props) => {
     }
   };
   return (
-    <span className="text-sm text-gray-600 rounded-lg px-2 py-0.5 bg-gray-200">
+    <span className="text-sm rounded-lg px-2 py-0.5 bg-gray-200">
       {categoryType(type)}
     </span>
   );

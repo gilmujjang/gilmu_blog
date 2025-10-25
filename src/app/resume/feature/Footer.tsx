@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="flex flex-col gap-2 justify-center items-center bg-GRAY h-28 text-xs text-white dark:bg-GRAY_EXTRAHEAVY dark:text-GRAY_HEAVY">
+    <footer className="flex flex-col gap-2 justify-center items-center bg-GRAY-LIGHT h-28 text-xs text-white">
       <div className="flex gap-1">
         <a
           target="_blank"
@@ -10,9 +10,7 @@ const Footer = () => {
           href="mailto:alsanrlf@naver.com"
           className="w-fit"
         >
-          <span className="px-1 text-xs dark:text-GRAY_HEAVY hover:text-BLACK dark:hover:text-BLACK">
-            Email
-          </span>
+          <span className="px-1">Email</span>
         </a>
         <a
           target="_blank"
@@ -20,14 +18,15 @@ const Footer = () => {
           href="https://github.com/gilmujjang"
           className="w-fit"
         >
-          <span className="px-1 text-xs dark:text-GRAY_HEAVY hover:text-BLACK dark:hover:text-BLACK">
-            Github
-          </span>
+          <span className="px-1">Github</span>
         </a>
-        <a target="_blank" rel="noreferrer" href="/blog" className="w-fit">
-          <span className="px-1 text-xs dark:text-GRAY_HEAVY hover:text-BLACK dark:hover:text-BLACK">
-            Blog
-          </span>
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href="https://blog.mugil.dev"
+          className="w-fit"
+        >
+          <span className="px-1">Blog</span>
         </a>
       </div>
       <span className="whitespace-pre-wrap text-center">

@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const DarkModeToggle = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -10,6 +10,13 @@ const DarkModeToggle = () => {
   // 한바퀴 돌면 하루 지난걸로 치고 날짜 카운트
   // 날짜 변화에 따라 옆에 장미가 성장하고 죽음
   // refresh 적용시 시간 로퇌
+
+  // 브라우저의 다크모드 설정 감지 및 초기 상태 적용
+  useEffect(() => {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setIsDarkMode(prefersDark);
+    document.documentElement.classList.toggle('dark', prefersDark);
+  }, []);
 
   const handleToggle = () => {
     document.documentElement.classList.toggle('dark', !isDarkMode);

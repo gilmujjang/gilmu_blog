@@ -10,25 +10,25 @@ const WorkExperience = () => {
       <div className="flex flex-col gap-16">
         <div className="flex flex-col md:flex-row gap-4 md:gap-0">
           <div>
-          <div className="flex md:flex-col items-center md:items-start mr-4 gap-4 md:sticky md:top-12">
-            <Image
-              src="/images/nemo.png"
-              alt="네모앱 로고"
-              width={96}
-              height={96}
-              className="object-cover rounded-lg border-[1px] border-GRAY_LIGHT border-solid"
-            />
-            <CompanyInfo
-              name="슈가힐"
-              job="Frontend Developer"
-              start="2022.04"
-            />
-          </div>
+            <div className="flex md:flex-col items-center md:items-start mr-4 gap-4 md:sticky md:top-12">
+              <Image
+                src="/images/nemo.png"
+                alt="네모앱 로고"
+                width={96}
+                height={96}
+                className="object-cover rounded-lg border-[1px] border-GRAY_LIGHT border-solid"
+              />
+              <CompanyInfo
+                name="슈가힐"
+                job="Frontend Developer"
+                start="2022.04"
+              />
+            </div>
           </div>
           <div>
             <div className="md:flex items-center gap-4 w-full mb-2 hidden">
               <div className="h-[1px] bg-GRAY_HEAVY/20 flex-grow" />
-              <span className="text-GRAY_HEAVY p-2 text-center italic">
+              <span className="p-2 text-center italic">
                 MAU 6만 상가, 사무실 1위 프롭테크앱 네모!
               </span>
             </div>
@@ -53,7 +53,8 @@ const WorkExperience = () => {
                   {
                     title: '코드푸시 AppCenter 마이그레이션',
                     period: '2025.03 - 2025.04',
-                    description:'번들파일을 S3에 업로드하고 히스토리를 json으로 관리하는 방식으로 마이그레이션 했습니다. 업데이트 체크 속도는 95%, 번들 파일 다운로드 속도는 70% 개선했습니다.'
+                    description:
+                      '번들파일을 S3에 업로드하고 히스토리를 json으로 관리하는 방식으로 마이그레이션 했습니다. 업데이트 체크 속도는 95%, 번들 파일 다운로드 속도는 70% 개선했습니다.',
                   },
                   {
                     title: '네모앱 CI/CD 구축',
@@ -94,7 +95,7 @@ const WorkExperience = () => {
                 }
                 techStack={['Next.js']}
                 experiences={[
-                                 {
+                  {
                     title: '카카오 지도를 사용한 마커 클러스터링 개발',
                     period: '2023.10 - 2024.02',
                     description:

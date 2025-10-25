@@ -17,6 +17,15 @@ body {
   margin: 0px;
 }
 
+/* 다크모드 기본 텍스트 색상 전역 적용 */
+html:not(.dark) body {
+  @apply text-BLACK;
+}
+
+html.dark body {
+  @apply text-GRAY_LIGHT;
+}
+
 body * {
   @apply transition-colors duration-1000;
 }

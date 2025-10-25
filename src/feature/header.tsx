@@ -7,8 +7,8 @@ import ResumeIcon from 'public/icons/file.svg';
 export default function Header() {
   const __DEV__ = process.env.NODE_ENV === 'development';
   return (
-    <div className="w-full">
-      <div className="h-[64px] flex items-center justify-between font-medium px-4">
+    <header className="w-full ">
+      <div className="h-[64px] flex items-center justify-between font-medium px-4 bg-gradient-to-r from-GRADIENT_FROM via-PRIMARY to-GRADIENT_TO sticky top-0 md:static md:h-20">
         <span>
           <a
             className="rounded-full px-4 py-1 text-center text-sm transition-colors hover:text-primary bg-muted font-medium text-primary"
@@ -38,7 +38,7 @@ export default function Header() {
         </span>
       </div>
       <ScrollIndicator />
-    </div>
+    </header>
   );
 }
 

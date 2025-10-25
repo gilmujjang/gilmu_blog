@@ -6,12 +6,12 @@ const Introduce = () => {
     <section>
       <div className="flex flex-col gap-8">
         <div className="flex gap-8 items-center">
-          <div
+          <img
+            src="/images/profile.jpg"
             style={{
               width: 160,
               height: 160,
               borderRadius: 80,
-              backgroundColor: 'gray',
             }}
           />
           <div className="flex flex-col gap-2">
@@ -22,7 +22,6 @@ const Introduce = () => {
               <span className="text-PRIMARY font-bold">민무길</span> 입니다
             </h1>
             <div className="flex gap-1">
-              <ContactItem href="mailto:alsanrlf@naver.com">Email</ContactItem>
               <ContactItem href="https://github.com/gilmujjang">
                 Github
               </ContactItem>
@@ -64,7 +63,7 @@ const ContactItem = ({
       className="w-fit"
     >
       <span
-        className="px-1 text-xs text-BLACK dark:text-GRAY_LIGHT hover:text-BLACK dark:hover:text-BLACK 
+        className="px-1 text-xs hover:text-BLACK dark:hover:text-BLACK 
       hover:text-PRIMARY_HEAVY dark:hover:text-PRIMARY_HEAVY"
       >
         {children}
