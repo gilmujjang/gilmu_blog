@@ -11,7 +11,7 @@ export default function Header() {
       <div className="h-[64px] flex items-center justify-between font-medium px-4 bg-gradient-to-r from-GRADIENT_FROM via-PRIMARY to-GRADIENT_TO sticky top-0 md:static md:h-20">
         <span>
           <a
-            className="rounded-full px-4 py-1 text-center text-sm transition-colors hover:text-primary bg-muted font-medium text-primary"
+            className="text-BLACK rounded-full px-4 py-1 text-center text-sm hover:text-primary bg-muted font-medium text-primary"
             href={
               __DEV__ ? 'http://blog.localhost:3000' : 'https://blog.mugil.dev'
             }
@@ -52,7 +52,7 @@ const ExternalLink = ({
   icon: any;
 }) => {
   return (
-    <a className="text-base flex gap-1" href={href}>
+    <a className="text-BLACK text-base flex gap-1" href={href}>
       <Image src={icon} alt="GitHub Icon" width={24} height={24} />
       <span>{title}</span>
     </a>

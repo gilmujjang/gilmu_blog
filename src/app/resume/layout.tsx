@@ -15,7 +15,9 @@ export default function ResumeLayout({
   return (
     <main className="overflow-x-hidden">
       <Header />
-      <div className="bg-gray-100 dark:bg-gray-900 ">{children}</div>
+      <div className="bg-gray-100 dark:bg-gray-950 transition-colors duration-1000 ">
+        {children}
+      </div>
       <Footer />
     </main>
   );

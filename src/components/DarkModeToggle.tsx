@@ -13,7 +13,9 @@ const DarkModeToggle = () => {
 
   // 브라우저의 다크모드 설정 감지 및 초기 상태 적용
   useEffect(() => {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const prefersDark = window.matchMedia(
+      '(prefers-color-scheme: dark)',
+    ).matches;
     setIsDarkMode(prefersDark);
     document.documentElement.classList.toggle('dark', prefersDark);
   }, []);
@@ -27,7 +29,7 @@ const DarkModeToggle = () => {
   return (
     <div className="flex flex-col gap-2">
       <div
-        className="relative w-32 h-16 bg-blue-900 dark:bg-gray-950 border rounded-xl overflow-hidden"
+        className="relative w-32 h-16 bg-blue-900 dark:bg-gray-950 transition-colors duration-1000 border rounded-xl overflow-hidden"
         onClick={handleToggle}
       >
         <Image
