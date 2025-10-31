@@ -2,16 +2,23 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const hostname = request.headers.get('host');
-  const subdomain = hostname?.match(/^([^.]+)\./)?.[1];
+  const hostname = request.headers.get('host') || '';
   const url = new URL(request.url);
 
+  const subdomain = hostname.split('.')[0];
+  const rootDomain = hostname.replace(/^([^.]+\.)/, '');
+
+  if (!hostname.includes('.') || hostname === rootDomain) {
+    const newUrl = `https://blog.${rootDomain}${url.pathname}${url.search}`;
+    return NextResponse.redirect(newUrl);
+  }
+
   if (subdomain === 'resume') {
-    return NextResponse.rewrite(new URL('/resume', request.url));
-  } else if (subdomain === 'blog') {
-    const path = url.pathname;
-    const newUrl = new URL(`/blog${path}`, request.url);
-    return NextResponse.rewrite(newUrl);
+    return NextResponse.rewrite(new URL(`/resume${url.pathname}`, request.url));
+  }
+
+  if (subdomain === 'blog') {
+    return NextResponse.rewrite(new URL(`/blog${url.pathname}`, request.url));
   }
 
   return NextResponse.next();
