@@ -1,0 +1,219 @@
+---
+title: 'APNs Server Certification'
+description: '공개키 암호화 방식과 전자서명에 대해 알아보자'
+keywords: [PKI, Certificate Authority, APNs]
+createdAt: '2024-12-13'
+thumbnail: 'howtowork_APNs_key.png'
+---
+
+<MDXImage
+  src="/post/howtowork_APNs_key/hello.png"
+  alt="Email from apple developer for should to include new server certificate"
+/>
+
+APNs의 server certificates를 변경할거니까 Trust Store에 new server certificate를 넣으라고?
+
+여기서 이해 가능한 단어는 APNs 뿐이었다.
+
+이 기회에 APNs 앱푸시 등록할 때 사용했던 p12키나 certificate등을 알아보기로 했다.
+
+# 1. 공개키 암호화 방식
+
+### PKI(Public Key Infrastructure)
+
+<MDXImage
+  src="/post/howtowork_APNs_key/pki.png"
+  alt="describe Public Key Infrastructure"
+/>
+
+비밀키와 공개키 쌍을 만든다. 사용자는 공개키로 데이터를 암호화 하고 호스트에서 전송한다.
+
+호스트는 비밀키로 복호화 한다.
+
+중간에 데이터를 탈취 해도 공격자는 비밀키가 없으므로 복호화 할 수 없다.
+
+사용자는 암호화 한 데이터는 호스트만이 복호화 할 수 있다는것을 믿고 민감한 데이터를 주고받을수 있다.
+
+### Signature
+
+<MDXImage
+  src="/post/howtowork_APNs_key/signature.png"
+  alt="describe Signature"
+/>
+
+호스트가 개인키로 인증서를 암호화 해서 사용자에게 전송한다.
+
+사용자는 공개키로 해당 인증서를 복호화 한다.
+
+호스트가 맞으면 복호화에 성공해서 인증서를 확인 할 수 있다.
+
+이 때 사용자가 사용한 공개키와 복호화 한 인증서가 진짜 호스트의 것이 맞는지 보장되어야 한다.
+
+그걸 보장해주는게 CA(Certificate Authority) 이다.
+
+### CA(Certificate Authority)
+
+위에서 Signature의 원리를 알아보았고 호스트가 진짜 호스트임을 확신할 수 없는 문제가 있었다. 그러면 자연스럽게 이런 구조를 상상 할 수 있다.
+
+<MDXImage
+  src="/post/howtowork_APNs_key/ca.png"
+  alt="describe Certificate Authority"
+/>
+
+호스트1이 호스트2를 증명하는 것이다!
+
+1은 2를 증명하고 2는 3을 3은 4,..5….6 무한히 연결시킬 수 있다. 하지만 뎁스를 무한히 가져가지는 않고 보통 3~4뎁스면 다 해결되는듯 하다.
+
+그래도 최초의 1번 호스트의 인증서가 증명되지 않았다는 점은 변하지 않았다. 1번 호스트를 **Root CA** 라고 한다.
+
+내 컴퓨터(맥북) 에도 Root CA가 이미 들어있다.
+
+**키체인 접근 > 시스템 키체인 > 시스템 루트**
+
+<MDXImage
+  src="/post/howtowork_APNs_key/rootca.png"
+  alt="root CA in macbook system root"
+/>
+
+Root CA의 인증서들이 내 컴퓨터 안에 이미 들어있다. 이건 OS가 관리한다.
+
+여기 100개정도의 인증서 모두 Root CA다. 이 Root CA로부터 연결되어서 나가는 중간 인증서들은 모두 믿을수 있게 된다. 이걸 **Chain of Trust** 라고 한다.
+
+자세한 원리는 이분 [블로그](https://gruuuuu.github.io/security/what-is-x509/)에 잘 정리되어있다.
+
+### TLS(SSL)
+
+PKI 암호화는 https 통신에 사용된다.
+
+<MDXImage src="/post/howtowork_APNs_key/tls.png" alt="describe TLS" />
+
+1. 사용자는 호스트에게 통신을 요청한다. 이 때 Pre Master Secret이라는 난수값을 같이 보낸다. 호스트는 사용자에게 PMS를 받아서 난수값을 돌려서 대칭키를 생성하고 인증서와 함께 사용자에게 전송한다.
+2. 호스트는 인증서와 함께 난수값을 하나 보낸다. 사용자와 호스트는 서로 주고받은 PMS와 난수값들로 대칭키를 생성한다.
+
+3, 4, 5. 사용자는 인증서의 정보를 바탕으로 하나씩 검증한다. 최상단의 Root CA까지 확인이 되면 인증서의 진위여부를 확인할 수 있다.
+
+일련의 서로를 확인하는 작업을 핸드셰이킹 이라고 한다. 이 과정은 많은 리소스가 필요하기 때문에 이후 부터는 생성한 대칭키를 이용해 비밀키 통신을 진행한다.
+
+# APNs의 인증 과정
+
+인증서를 발급받는 과정은 다루지 않겠다.
+
+p12는 [APNs::인증서 발급받는 방법 (p.12, pem)](https://babbab2.tistory.com/57), p8은 검색해보시면 된다.
+
+p8방식을 권장한다. 자세한 내용은 후술하겠다.
+
+### 확장자 정의
+
+### 인증서, 키 계열
+
+cer, crt: 인증서 이다. cer은 유니코드 형식이고 window 시스템에서, crt는 바이너리 형식이고 linux 시스템에서 많이 사용된다.
+인증서의 양식은 보통 국제 규격인 x509를 따른다.
+p8: JWT
+
+### 기타
+
+pem: x509 규약의 v3 파일의 한 형태. Base 64로 인코딩된 ASCII text file 이다. 인증서 또는 키를 저장 할 수 있다.
+p12: 하나의 파일에 여러 암호화 관련 entity(독립체)를 합쳐서 보관하는 표준 방식히다. 인증서, Private Key등을 파일 하나에 보관 할 수 있다. 백업 또는 이동용으로 주로 사용된다. 비밀번호 설정이 필수다. (key 아니고 비밀번호다)
+der: Distinguished Encoding Representation. 암호키와 인증서를 binary로 저장하거나 전달하는 용도로 사용되는 표준이다. p12와 비슷하다.
+
+### FCM 등록
+
+나는 p12를 FCM에 등록했기 때문에 전체 흐름을 그리면 다음과 같다.
+
+<MDXImage src="/post/howtowork_APNs_key/fcm.png" alt="describe FCM" />
+
+애플 개발자 센터에서 발급받은 인증서와 내 컴퓨터에 있는 개인키를 합쳐서 내보내면 p12 파일이 된다.
+
+이제 이걸 FCM에 올리면 되는데 이 p12파일이 뭔지 궁금해졌다.
+
+```jsx
+openssl pkcs12 -in apns-cert.p12 -nodes -legacy -out apns-cert.pem
+```
+
+openssl을 이용해서 p12 ⇒ pem 파일로 변환했다. pem파일은 유니코드로 인코딩 해서 사람이 볼 수 있는 형태이다.
+
+여기서 -legacy 옵션을 붙여줘야 한다. 붙여주지 않으면 암호화 알고리즘 호환문제로 0308010C 에러가 발생한다. 대충 RC-2-40 알고리즘은 보안문제로 deprecated 되었다는 내용인데 애플은 아직 RC-2 알고리즘을 사용하고 있는것 같다. [키사의 2021 소프트웨어 보안약점 진단가이드](https://www.kisa.or.kr/2060204/form?postSeq=9&page=1) pdf 330p를 보면 컴퓨터의 발전으로 취약해진 알고리즘의 예시에 RC-2, SHA1 등이 있다.
+
+**apns-cert.pem 파일**
+
+```json
+MAC: sha1, Iteration 1
+MAC length: 20, salt length: 8
+PKCS7 Encrypted data: ~, Iteration 2048
+Certificate bag
+Bag Attributes
+    friendlyName: Apple Sandbox Push Services: ~
+    localKeyID: ~
+subject=UID=~, CN=Apple Sandbox Push Services: ~, ~, C=US
+issuer=CN=Apple Worldwide Developer Relations Certification Authority, OU=G4, O=Apple Inc., C=US
+-----BEGIN CERTIFICATE-----
+GjTCCBXWgAwIAgIQaoH1se47dm0OVKUHiHhjANBgkqhiG9w0BAQsFADB
+~~
+-----END CERTIFICATE-----
+PKCS7 Data
+Shrouded Keybag: ~, Iteration 2048
+Bag Attributes
+    friendlyName: �48
+    localKeyID: ~
+Key Attributes: <No Attributes>
+-----BEGIN PRIVATE KEY-----
+EvgIBDANBgkqhkiG9w0AQEFAASCBKgggSkAgEAoIBAQDdzPnDCjAF7B
+~~
+-----END PRIVATE KEY-----
+```
+
+인증서와 비밀키가 들어있다!
+
+### p12와 p8
+
+p12는 1년마다 갱신해야하지만 p8은 갱신하지 않아도 된다는 것은 알고있지만 무슨 차이가 있는지는 모르고 있었다. 그래서 좀 찾아봤다.
+
+p12는 인증서나 키를 담는 가방이고 p8은 비밀키, 공개키와 인증서 대신 JWT 토큰이 들어있는 json이다. p12는 기존 CA를 활용한 시스템이고 p8은 토큰을 이용해서 애플 자체적인 개발자 계정 정보를 활용해서 검증한다는 차이가 있다.
+
+p12는 인증서를 활용하니 1년마다 갱신해야하고 p8은 애플의 시스템을 활용하니 갱신할 필요가 없는 것이다. 또한 .cer 인증서 파일을 받아서 openssl로 파일의 포맷을 변경해서 FCM에 올리는 번거로움도 덜하다.
+
+이를 그림으로 그려봤다.
+
+<MDXImage
+  src="/post/howtowork_APNs_key/p12.png"
+  alt="describe how to set up apple push notification using p12 and p8"
+/>
+
+p8로 하면 1년마다 갱신 안해도 되고 과정도 더 간편하다.
+
+### 앱푸시
+
+<MDXImage
+  src="/post/howtowork_APNs_key/apppush.png"
+  alt="describe how to work APNs"
+/>
+
+앱푸시의 전체 흐름은 이렇다.
+
+p8을 사용한 경우 FCM에서 APNs로 Signature대신 token을 보낼거라고 예상된다.
+
+# 그래서 뭐 해야됨?
+
+Trust Store에 새로운 Root CA를 추가하라고 한다.
+
+https인증을 위해서 인증서를 넣어본적은 있어도 Root CA의 목록을 관리하는 Trust Store는 수정해본적이 없다.
+
+Sectigo 한국총판인 한국정보인증의 [공지사항](https://www.kicassl.com/cstmrsuprt/ntc/searchNtcDetail.sg?page=&ntcSeq=1221&mode=&searchType=subject&searchWord=&searchRowCnt=10)을 보니까 실마리가 있다.
+
+Sectigo는 Root CA 업체이고 AAA Certificate Services 인증서를 제공하고 있는데 이 인증서는 SHA1 알고리즘을 사용한다. SHA1 알고리즘은 이미 2011년 부터 안전하지 않다고 알려져 왔고 많은 기업, 단체들이 대응준비를 해왔다.
+
+암호화 알고리즘은 컴퓨터가 발전하면서 그 안전성을 위협받고 있지만 암호화 알고리즘도 발전하고 있다.
+
+Sectigo에서도 이미 USERTrust RSA Certification Authority라는 SHA-3 알고리즘 기반 Root CA를 교차 검증 되게 묶어서 제공하고 있었다. 다들 준비만 하고 있었는데 Mozilla가 총대 메고 먼저 나서는 모양새 이다.
+
+[Mozilla wiki](https://wiki.mozilla.org/CA/Root_CA_Lifecycles) 에 따르면 2006년 이전에 만들어진 인증서는 2025년 4월 15일부터 Trust Store에서 제거한다.
+
+그래서 뭐 해야됨?
+
+FCM이나 AWS의 SNS같은 third party 라이브러리를 사용하고 있으면 안심하고 가만히 계시면 됩니다. 구글과 아마존의 뛰어난 개발자들이 알아서 처리해 줄 겁니다.
+
+그런데 알림 서버를 직접 구축해서 APNs 서버랑 직접 통신을 하는경우는 정확히 어디서 누가 Trust Store를 관리하는지 모르겠다.
+
+[node-apn의 update apple root cert?](https://github.com/parse-community/node-apn/issues/49) 이슈를 보면 21년에도 비슷한 상황이었는데 결론은 nodejs 버전별로 관리하는것 같다. 다른 언어도 비슷하지 않을까 상상해본다.
+
+이상.
