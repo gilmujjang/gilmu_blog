@@ -12,7 +12,7 @@ export default function BlogLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main>
+    <main className="bg-gray-100 dark:bg-gray-950 transition-colors duration-1000 overflow-y-auto">
       <Header />
       {children}
     </main>
