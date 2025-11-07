@@ -10,7 +10,7 @@ const WorkExperience = () => {
       <div className="flex flex-col gap-16">
         <div className="flex flex-col md:flex-row gap-4 md:gap-0">
           <div>
-            <div className="flex md:flex-col items-center md:items-start mr-4 gap-4 md:sticky md:top-12">
+            <div className="flex md:flex-col items-center md:items-start mr-4 gap-4 md:sticky md:top-24">
               <Image
                 src="/images/nemo.png"
                 alt="네모앱 로고"

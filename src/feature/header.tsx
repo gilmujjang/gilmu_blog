@@ -7,11 +7,11 @@ import ResumeIcon from 'public/icons/file.svg';
 export default function Header() {
   const __DEV__ = process.env.NODE_ENV === 'development';
   return (
-    <header className="w-full ">
-      <div className="h-[64px] flex items-center justify-between font-medium px-4 bg-gradient-to-r from-GRADIENT_FROM via-PRIMARY to-GRADIENT_TO sticky top-0 md:static md:h-20">
+    <header className="w-full sticky top-0 border-b border-gray-200 dark:border-gray-700 transition-colors duration-1000">
+      <div className="h-[64px] flex items-center justify-between font-medium px-4 md:static md:h-20 bg-background/95 p-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <span>
           <a
-            className="text-BLACK rounded-full px-4 py-1 text-center text-sm hover:text-primary bg-muted font-medium text-primary"
+            className="text-BLACK dark:text-white rounded-full px-4 py-1 text-center text-sm hover:text-primary bg-muted font-medium text-primary"
             href={
               __DEV__ ? 'http://blog.localhost:3000' : 'https://blog.mugil.dev'
             }
@@ -52,7 +52,7 @@ const ExternalLink = ({
   icon: any;
 }) => {
   return (
-    <a className="text-BLACK text-base flex gap-1" href={href}>
+    <a className="text-BLACK dark:text-white text-base flex gap-1" href={href}>
       <Image src={icon} alt="GitHub Icon" width={24} height={24} />
       <span>{title}</span>
     </a>

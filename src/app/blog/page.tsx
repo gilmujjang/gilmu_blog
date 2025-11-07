@@ -2,10 +2,7 @@ import BlogPostList from '@/page/blog/feature/BlogPostList';
 
 export default function Home() {
   return (
-    <section
-      className="flex justify-center items-center
-      w-full h-[calc(100vh-64px)] gap-16"
-    >
+    <section className="flex justify-center items-center gap-16 overflow-y-auto">
       <BlogPostList />
     </section>
   );
