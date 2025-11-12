@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import Footer from './feature/Footer';
-import Header from '@/feature/header';
+import Footer from '../../feature/Footer';
+import Header from '@/feature/Header';
 
 export const metadata: Metadata = {
   title: '길무짱의 블로그',

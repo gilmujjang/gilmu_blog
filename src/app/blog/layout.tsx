@@ -1,6 +1,6 @@
-import Header from '@/feature/header';
+import Header from '@/feature/Header';
 import type { Metadata } from 'next';
-import Footer from '../resume/feature/Footer';
+import Footer from '../../feature/Footer';
 
 export const metadata: Metadata = {
   title: '민무길 블로그',
