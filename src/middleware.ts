@@ -9,7 +9,7 @@ export function middleware(request: NextRequest) {
   const rootDomain = hostname.replace(/^([^.]+\.)/, '');
 
   if (!hostname.includes('.') || hostname === rootDomain) {
-    const newUrl = `https://blog.${rootDomain}${url.pathname}${url.search}`;
+    const newUrl = `${request.nextUrl.protocol === 'https:' ? 'https' : 'http'}://blog.${rootDomain}${url.pathname}${url.search}`;
     return NextResponse.redirect(newUrl);
   }
 

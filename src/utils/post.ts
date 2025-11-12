@@ -6,14 +6,15 @@ import { sync } from 'glob';
 import readingTime from 'reading-time';
 import { TCategory, TPost, TPostAbstract, TPostContent } from '@/types/post';
 
-const BASE_PATH = '/src/blog';
+const BASE_PATH = 'src/blog';
 const POSTS_PATH = path.join(process.cwd(), BASE_PATH);
 
 export const parsePostAbstract = (postPath: string): TPostAbstract => {
-  const filePath = postPath
-    .slice(postPath.indexOf(BASE_PATH))
+  const normalizedPath = postPath.replace(/\\/g, '/');
+  const filePath = normalizedPath
+    .slice(normalizedPath.indexOf(BASE_PATH))
     .replace(`${BASE_PATH}/`, '')
-    .replace('.mdx', '');
+    .replace('/content.mdx', '');
 
   const [category, slug] = filePath.split('/');
   const url = `/blog/${category}/${slug}`;
