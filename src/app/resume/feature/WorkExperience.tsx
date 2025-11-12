@@ -22,6 +22,7 @@ const WorkExperience = () => {
                 name="슈가힐"
                 job="Frontend Developer"
                 start="2022.04"
+                end="2025.07"
               />
             </div>
           </div>

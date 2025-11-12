@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Title = ({ children }: { children: React.ReactNode }) => {
-  return <h2 className="text-2xl font-semibold mb-2">{children}</h2>;
+  return <h1>{children}</h1>;
 };
 
 export default Title;

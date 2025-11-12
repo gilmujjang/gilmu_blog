@@ -11,7 +11,7 @@ export default function PostDetail({ post }: { post: TPost }) {
   const { title, content, description, keywords, readingMinutes, createdAt } =
     post;
   return (
-    <article className="flex flex-col max-w-4xl mx-auto gap-4 my-16">
+    <article className="post_detail flex flex-col max-w-4xl mx-auto my-16">
       <header className="mb-8">
         <Title>{title}</Title>
         <Description>{description}</Description>

@@ -6,7 +6,7 @@ createdAt: '2025-04-03'
 thumbnail: 'appcenter-migration-thumbnail.png'
 ---
 
-# AppCenter 서비스 종료
+## AppCenter 서비스 종료
 
 CodePush를 서비스하던 AppCenter가 2025년 3월 31일 서비스를 종료했다.
 
@@ -17,6 +17,8 @@ CodePush를 서비스하던 AppCenter가 2025년 3월 31일 서비스를 종료�
 
 코드푸시는 스토어 심사를 우회해서 유저에게 배포가 가능하다는 장점으로 널리 사용되어왔다.
 긴급히 배포해야 하는 에러가 있을때에도 유용하게 사용할 수 있지만 개발팀 내부에서 qa를 진행할 때도 도움이 되었다. 코드푸시를 도입하기 전에는 수정사항을 공유하기 위해 배포를 하루에 5번씩 했는데 그 당시에는 배포 한번에 30분씩 걸렸었다. 코드푸시는 공유하는데 1분도 걸리지 않는다.
+
+<hr />
 
 # 코드푸시 동작 원리
 
@@ -36,9 +38,11 @@ CodePush를 서비스하던 AppCenter가 2025년 3월 31일 서비스를 종료�
 
 그런데 이 무료 서비스가 종료된다니 앞날이 캄캄했다.
 
-# 대응 방법
+<hr />
 
-## AppCenter 대체 서비스
+## 대응 방법
+
+### AppCenter 대체 서비스
 
 번들 파일을 보관하고 사용자의 확인요청 API를 처리하는 유사 서비스는 AppCenter 외에도 많이 있다.
 Expo 에서도 EAS(Expo Application Services)를 제공하고 있고 AppCenter의 빈자리를 노리는 여러 서비스들이 만들어졌다. 하지만 회사 프로젝트는 어느정도 보수적으로 접근해야 하기 때문에 EAS를 제외하고는 지속가능성 항목에서 제외했다. 아래는 EAS의 가격 정책이다.
@@ -47,7 +51,7 @@ Expo 에서도 EAS(Expo Application Services)를 제공하고 있고 AppCenter�
 
 Free plan은 1,000 MAUs 까지 가능하다. 유료는 기각이다.
 
-## AppCenter 서버 직접 돌리기
+### AppCenter 서버 직접 돌리기
 
 <MDXImage
   src="/post/codepush_migration/AzureMechanism.png"
@@ -60,7 +64,7 @@ AppCenter가 대신 돌려주던 서버를 내돈내고 서버를 돌리면 되�
 StandAlone 버전은 마이크로소프트의 Azure를 기준으로 개발되었다. StandAlone 버전을 사용하면 장점이 기존 “개발자” ⇒ AppCenter ⇒ “유저”의 로직을 보존하기 때문에 코드 수정사항이 최소한이라는 점이 가장 크다.
 물론 Azure를 사용한다는 전제에서다. 안타깝게도 우리회사는 작년에 Azure에서 AWS로 인프라 전체이관을 했다. 라이브 상태인 서비스 전체를 4달 걸려서 겨우 이관했는데 여기서 코드푸시 때문에 Azure 서버 한대만 돌리자는 말은 꺼낼수 없다. 그렇다고 StandAlone 버전을 AWS에서 사용할수 있게 개조하기에는 자신이 없었다.
 
-## 제 3의 라이브러리 사용하기
+### 제 3의 라이브러리 사용하기
 
 바퀴를 재발명 하지 말라했다.
 StandAlone 버전을 AWS용으로 개조한 버전을 사용하면 된다.
@@ -70,7 +74,9 @@ AppCenter 사용시 번들 다운로드 속도가 평균 5초정도 걸렸는데
 최종적으로 Soomgo-Mobile/react-native-code-push 를 사용하기로 했는데 물론 AWS S3를 이용하는점, 기존 코드푸시 사용법과 거의 유사한점, 관리가 잘 되고 있다는 점, 속도와 에러율 개선이 기대되는점 등의 이유도 있었지만 가장 큰 이유는 내가 이해가 되서였다.
 이전에 코드푸시를 사용할때는 AppCenter와 코드푸시에 대한 이해도 없이 그저 사용법만 숙지하고 사용해왔다. 사실 관심이 별로 없었다. AppCenter의 종료 공지는 1년전부터 알았지만 막상 1달 앞으로 다가와서 급하게 진행했는데 번들 파일을 S3에 적재하기, 버전별 코드푸시 히스토리 관리하기, 앱에서 어떤 로직으로 업데이트 여부를 확인하고 앱을 재시작 하는지 등등 대강은 알게 되었다. 그래서 이 라이브러리가 버려지더라도 내가 이어서 관리 할 수 있겠다는 생각이 들었다. 그래서 선택했다.
 
-# 마이그레이션
+<hr />
+
+## 마이그레이션
 
 개발자는 S3에 버전 정보를 저장한 history json 파일과 js번들 파일을 업로드한다.
 앱은 CloudFront에서 json으로 history파일을 확인한다.
@@ -79,14 +85,16 @@ AppCenter 사용시 번들 다운로드 속도가 평균 5초정도 걸렸는데
 
 <MDXImage src="/post/codepush_migration/S3Mechanism.png" alt="S3 Mechanism" />
 
-# 성능 분석
+<hr />
+
+## 성능 분석
 
 마이그레이션을 완료하고 과연 성능이 얼마나 향상되었는지 확인을 해보았다.
 모든 기기 사무실 와이파이를 사용했고 fast.com 속도는 450 Mbps 였고 아이폰 11 pro를 사용했다.
 hermes 컴파일이 속도에 영향을 미치는지 궁금해서 한버전 안한버전 두번 진행했다.
 속도 측정은 5번 측정해서 평균을 냈다. 오차범위를 크게 넘는 특이값은 없었다.
 
-## 기존 AppCenter CodePush 성능 분석
+### 기존 AppCenter CodePush 성능 분석
 
 non hermes version
 번들 사이즈 iOS 8.5MB, android 8.2MB
@@ -100,7 +108,7 @@ hermes version
 
 iOS는 hermes 컴파일 여부가 사이즈와 변화가 적은데 안드로이드는 hermes 컴파일을 했을때 용량이 늘어났다. hermes 컴파일 여부가 코드푸시 속도에 영향을 크게 미칠줄 알았는데 예상과 달랐다. AppCenter에서 번들을 다운받아 .zip 확작자 붙여서 압축 해제해서 봤는데 Source map은 들어있지 않았다. hermes 컴파일 과정에서 텍스트가 늘어나서 그런것으로 생각된다.
 
-## S3 코드푸시 성능분석
+### S3 코드푸시 성능분석
 
 테스트 조건의 위와 동일한데 hermes 컴파일 버전만 진행했다.
 번들 사이즈 iOS 9.2MB, android 9.2MB
