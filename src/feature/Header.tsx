@@ -10,7 +10,7 @@ export default function Header() {
   const host = headersList.get('host') || '';
   const subdomain = host.split('.')[0];
   return (
-    <header className="w-full sticky top-0 border-b border-gray-200 dark:border-gray-700 transition-colors duration-1000">
+    <header className="w-full sticky top-0 border-b border-GRAY_SEMI_LIGHT dark:border-GRAY_SEMI_HEAVY transition-colors duration-1000">
       <div className="h-[64px] flex items-center justify-between font-medium px-4 md:static md:h-20 bg-background/95 p-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <span>
           <a
