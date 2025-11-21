@@ -3,8 +3,20 @@ import Footer from '../../feature/Footer';
 import Header from '@/feature/Header';
 
 export const metadata: Metadata = {
-  title: '길무짱의 블로그',
-  description: '길무짱의 블로그',
+  title: '민무길 블로그',
+  description: '민무길 이력서 입니다',
+  openGraph: {
+    title: '민무길',
+    description: 'resume',
+    images: [
+      {
+        url: '/images/sparrow.webp',
+        width: 1200,
+        height: 600,
+        alt: 'Profile Image',
+      },
+    ],
+  },
 };
 
 export default function ResumeLayout({

@@ -4,7 +4,19 @@ import Footer from '../../feature/Footer';
 
 export const metadata: Metadata = {
   title: '민무길 블로그',
-  description: '민무길의 블로그 입니다.',
+  description: '민무길의 블로그 입니다',
+  openGraph: {
+    title: '민무길',
+    description: 'blog',
+    images: [
+      {
+        url: '/images/sparrow.webp',
+        width: 1200,
+        height: 600,
+        alt: 'Profile Image',
+      },
+    ],
+  },
 };
 
 export default function BlogLayout({
