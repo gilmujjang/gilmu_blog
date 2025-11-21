@@ -10,9 +10,9 @@ export default function Header() {
   const host = headersList.get('host') || '';
   const subdomain = host.split('.')[0];
   return (
-    <header className="w-full sticky top-0 border-b border-GRAY_SEMI_LIGHT dark:border-GRAY_SEMI_HEAVY transition-colors duration-1000">
-      <div className="h-[64px] flex items-center justify-between font-medium px-4 md:static md:h-20 bg-background/95 p-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <span>
+    <nav className="w-full sticky top-0 border-b border-GRAY_SEMI_LIGHT dark:border-GRAY_SEMI_HEAVY transition-colors duration-1000">
+      <ol className="flex items-center justify-between font-medium px-4 md:static md:h-20 bg-background/95 p-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <li>
           <a
             className="text-BLACK dark:text-white rounded-full px-4 py-1 text-center text-sm hover:text-primary bg-muted font-medium text-primary"
             href={
@@ -21,8 +21,8 @@ export default function Header() {
           >
             민무길 블로그
           </a>
-        </span>
-        <span className="flex items-center gap-4">
+        </li>
+        <li className="flex items-center gap-4">
           {subdomain === 'blog' ? (
             <ExternalLink
               title="Resume"
@@ -50,10 +50,10 @@ export default function Header() {
             icon={GithubIcon}
           />
           <DarkModeToggle />
-        </span>
-      </div>
+        </li>
+      </ol>
       <ScrollIndicator />
-    </header>
+    </nav>
   );
 }
 

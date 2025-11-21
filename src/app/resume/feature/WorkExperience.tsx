@@ -138,7 +138,7 @@ const ExperienceByProduct = ({
   experiences: { title: string; period: string; description: string }[];
 }) => {
   return (
-    <div className="md:border-GRAY_LIGHT md:border-solid md:border-l-[1px] md:pl-4 markdown w-full">
+    <div className="md:border-GRAY dark:md:border-GRAY_SEMI_HEAVY md:border-solid md:border-l-[1px] md:pl-8 markdown w-full transition-colors duration-1000">
       <div className="flex gap-4 my-4 items-center">
         <h4 className="text-xl font-semibold">{product}</h4>
         {links.map((link) => {

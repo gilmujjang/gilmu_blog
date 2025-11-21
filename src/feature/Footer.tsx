@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="flex flex-col gap-2 justify-center items-center h-28 text-xs border-t border-GRAY_SEMI_LIGHT dark:border-GRAY_SEMI_HEAVY">
+    <footer className="flex flex-col gap-2 justify-center items-center h-24 text-xs border-t border-GRAY_SEMI_LIGHT dark:border-GRAY_SEMI_HEAVY">
       <div className="flex gap-1">
         <a
           target="_blank"
