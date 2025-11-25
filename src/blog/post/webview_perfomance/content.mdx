@@ -1,0 +1,151 @@
+---
+title: 'ReactNative WebView 렌더링 성능 분석'
+description: 'OS, 기기별 실험결과를 공유합니다.'
+keywords: ['Reactnative', 'Webview']
+createdAt: '2024-11-13'
+thumbnail: 'webview-test.png'
+---
+
+## 웹뷰 성능분석 계기
+
+ReactNative의 WebView 안에서 바텀시트 애니메이션을 구현했는데 S20+에서 약간의 버벅거림이 확인되었다.
+
+갤럭시 S20+는 출시된지 4년이나 지난 기기니까 성능이 떨어져서 그렇지 않을까 생각해서 그냥 넘어가려 했다. 하지만 2018년에 출시된 아이폰 XR은 버벅이지 않았다. 여기서 궁금해졌다.
+
+## 문제 정밀분석
+
+우선 “버벅거림” 을 정의하기 위해서 정상동작에 대해 생각해보았다.
+
+바텀시트는 일정 높이까지 0.1초 만에 올라온다. 초당 60프레임이면 6프레임이 필요하다.
+
+<MDXImage
+  src="https://velog.velcdn.com/images/alsanrlf/post/32bc400c-ded1-470f-8cf1-3d33c5e3069b/image.png"
+  width={800}
+  height={400}
+/>
+
+바텀시트가 빠르게 올라오다 정해진 높이에서 감속하는 움직임을 함수화 하면 아래와 같다.
+
+y = √(1 - (x - 1)²)
+
+x는 0에서 1의 실수
+
+<MDXImage
+  src="https://velog.velcdn.com/images/alsanrlf/post/dbb802e1-1b88-4d2a-84ec-501fb838a68d/image.png"
+  width={300}
+  height={300}
+/>
+
+이상적인 프레임 분할을 한다면 아래 그림과 같이 6개의 프레임을 순서대로 렌더링 해주면 인간의 눈에는 아주 부드러운 애니메이션으로 인식될 것이다.
+
+<MDXImage
+  src="https://velog.velcdn.com/images/alsanrlf/post/c0640efa-32a8-4f70-84ad-1caec4016fff/image.png"
+  width={300}
+  height={300}
+/>
+
+0.1초에 6프레임이니까 1프레임에 16.6ms다. WebView가 reflow, paint, compositing 과정을 0.166초 안에 완료하지 못해서 프레임 드랍이 발생하는 것이었다.
+
+프레임 드랍이 발생하는 현상을 동영상으로 녹화해서 저속으로 측정한 결과 5개의 프레임일 뿐 아니라 2~3번째 프레임에서 드랍이 발생하는것으로 보였다.
+
+<MDXImage
+  src="https://velog.velcdn.com/images/alsanrlf/post/aebf931b-af31-4daa-9e05-049927834795/image.png"
+  width={300}
+  height={300}
+/>
+
+원인을 찾았으니 이제 해결만 하면 된다.
+
+## 해결방법
+
+바로 생각나는것은 웹뷰안의 로직을 개선하는것이다. CSS는 transition을 사용하고 will-change를 사용하라 등등… 하지만 이미 적용되어있었기 때문에 더 할 수 있는건 없었다. 그래서 WebView를 보았다.
+
+WebView에서 2개의 prop을 찾았다. androidHardwareAccelerationDisabled, androidLayerType
+
+androidHardwareAccelerationDisabled 이 property는 [2019년에 안드로이드9 에서 웹뷰가 안되는 이슈](https://github.com/react-native-webview/react-native-webview/issues/811)로 인해 추가되었는데 [react-native-webview v10.8.0 에서 androidLayerType 으로 통합되면서 deprecated](https://github.com/react-native-webview/react-native-webview/pull/1588) 되었다.
+
+androidLayerType은 “none”, “software”, “hardware” 3가지가 있는데 “hardware”는 GPU, “software”는 CPU를 말한다.
+
+androidLayerType 설명을 보자
+
+- `none` (default) - The view does not have a layer.
+- `software` - The view has a software layer. A software layer is backed by a bitmap and causes the view to be rendered using Android's software rendering pipeline, even if hardware acceleration is enabled.
+- `hardware` - The view has a hardware layer. A hardware layer is backed by a hardware specific texture and causes the view to be rendered using Android's hardware rendering pipeline, but only if hardware acceleration is turned on for the view hierarchy.
+
+hardware 가속시 view의 canvas의 paint 작업을 GPU로 수행한다.
+
+software면 CPU로 처리하는데 메모리의 cache를 사용한댄다. 큰 HTML 조각을 렌더링 하려고 하면 메모리 부족으로 화면에 출력이 안될수도 있다고 언급하는데 실제로 안된다는 리포트가 많지만 나는 확인하지 못했다.
+
+androidLayerType을 hardware로 하니까 프레임드랍 현상이 사라졌다. 이제 정리하려 했는데 이 androidLayerType이 얼마나 효과가 있는건지 궁금해졌다.
+
+## 디바이스별 웹뷰 렌더링 성능 분석
+
+### 실험 설계
+
+웹뷰의 렌더링 성능을 측정하는 실험을 설계해봤다.
+
+```
+1. 화면에 SVG 파일을 300개씩 random 사이즈로 렌더링 한다.
+2. 다 그렸으면 지우고 1번으로.
+3. 100회 반복 실시. 악!
+```
+
+이런 테스트를 상상해봤다.
+
+React에서 다 그렸다는것을 어떻게 인식할수 있을까? useLayoutEffect 와 useEffect를 사용했다.
+
+```jsx
+useLayoutEffect(() => {
+  if (startTimeRef.current === null) startTimeRef.current = performance.now();
+}, [items]);
+
+useEffect(() => {
+  againRender();
+}, [items]);
+
+const againRender = () => {
+  if (repeaqRef.current >= 100) {
+    const performanceTime = Math.round(
+      performance.now() - startTimeRef.current,
+    );
+    setPerformanceTime(performanceTime);
+    console.log('performanceTime', performanceTime);
+    return;
+  }
+  repeaqRef.current += 1;
+  setItems(makeRandomKeys(300));
+};
+```
+
+하트 svg 아이콘 300개를 랜덤한 크기로 (0 ~ 40px)로 생성 → 렌더링 완료 → 지우고 반복 100회 하고 소요시간을 표시하는 벤치마크를 구현했다.
+
+<MDXImage src="https://velog.velcdn.com/images/alsanrlf/post/641dd47f-1c50-4225-989d-15b88eb2b72d/image.png" />
+
+### 실험 결과
+
+보유한 테스트 기기들로 테스트를 진행했다. 실험은 5번 반복해서 평균을 측정했다.
+
+<MDXImage
+  src="https://velog.velcdn.com/images/alsanrlf/post/d4745890-ae10-4e43-b846-429b1d06db88/image.png"
+  width={800}
+/>
+
+의외의 결과가 나왔는데 아이폰이 갤럭시보다 성능이 3년정도 앞섰다. RAM 용량이나 멀티코어 스펙은 보통 갤럭시가 앞서는데 아이폰이 갤럭시보다 3년은 앞선 결과를 보였다. 웹뷰의 렌더링 성능은 싱글코어와 높은 상관관계가 있어보인다.
+
+애플은 반도체 칩부터 OS, 브라우저 까지 모든 파이프라인을 최적화 하는 반면 갤럭시는 퀄컴, 삼성, Android 각자 따로따로 개발을 해서 최적화에서 약간 밀리는게 아닌가 하는 상상을 해본다.
+
+위 실험 결과를 차트로 표시했다.
+
+x축은 GeekBench Single-Core Score
+
+y축은 위 테스트 소요시간. 단위는 ms
+
+**빨간색은 아이폰** **파란색은 안드로이드**
+
+<MDXImage src="https://velog.velcdn.com/images/alsanrlf/post/39e38c21-42fd-4f67-9154-a012ebb0b97c/image.png" />
+
+ios, android 모두 300ms에 수렴한다.
+
+<MDXImage src="https://velog.velcdn.com/images/alsanrlf/post/1c5ec724-bac2-4cd3-a972-34692f94dbf0/image.png" />
+
+안드로이드 기기의 경우 gpu가속을 하면 기기마다 편차는 있지만 20%정도의 성능 향상이 관측된다.
