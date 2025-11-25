@@ -79,4 +79,15 @@ a {
     margin-top: 2rem;
     margin-bottom: 2rem;
   }
+  pre {
+    background: #eeeeee;
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+  code {
+    @apply text-PRIMARY;
+  }
+  pre code {
+    @apply text-BLACK;
+  }
 }
