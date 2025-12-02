@@ -1,0 +1,228 @@
+---
+title: 'ReactNative 빌드 살펴보기'
+description: 'Android와 iOS의 빌드 과정을 살펴보자'
+keywords: [ReactNative, Build, Android, iOS]
+createdAt: '2024-11-13'
+thumbnail: 'reactnative_build_native.png'
+---
+
+ReactNative는 개발은 vscode, windsurf, cursor 같은 에디터로 하지만 빌드는 Xcode와 Android Studio로 한다.
+
+Xcode와 Android Studio에서 실제로 일어나는 일이 뭔지 조사해봤다.
+
+## Android
+
+### android 폴더 분석
+
+- **`settings.gradle`** Gradle Build Init.
+  Gradle 초기화 및 프로젝트 구성을 위한 전역 빌드 정보 포함
+- **`gradle.properties`** Root Build File.
+  build와 관련된 환경설정을 할 수 있다 (herems on/off 라던지). 환경변수도 여기에 저장할 수 있다.
+- **`gradlew`** & **`gradlew.bat`** Gradle Wrapper File.
+  unix와 window에서 Gradle 파일이 실행되게 해주는 Script
+- **`build.gradle(root build file)`** Root Build File.
+  모든 하위 모듈 및 프로젝트들에 공통으로 적용하는 빌드 설정
+
+`app/`
+
+- **`build.gradle(app build file)`** 하위 프로젝트의 빌드 파일.
+  React Native의 코드들이 모두 여기있으므로 여기가 본체이다. 코드 푸시 관련 설정도 여기서 한다.
+- **`src/main/`** Android 관련 코드의 모음
+  - **`AndroidManifest.xml`** Android Application Metadata.
+    빌드툴, Android OS, 스토어 등에 제공할 “앱 이름”, “필요 권한”, “시작 페이지” 등 필수적인 정보들이 정의되어 있다.
+  - **`java/`** 본격적인 Native 앱개발 부분. Java나 Kotlin으로 개발한다. `MainActivity.kt` 파일이 React의 index.html이나 App.tsx 같은 진입점.
+    Native 모듈을 만드는 곳이다.
+  - **`res/`** 이미지, 아이콘 등등
+  - **`assets/`** 폰트 포함 기타등등
+
+`gradle/wrapper/`
+
+- **`gradle-wrapper.jar`** Gradle BootStrap File.
+  실행파일
+- **`gradle-wrapper.properties`** Gradle Wrapper Config.
+  배포를 다운로드할 위치 지정
+
+### Build
+
+큰 흐름은 다음과 같다.
+
+```
+build.gradle → settings.gradle → app/build.gradle x N 설치 → build
+```
+
+라이브러리들을 설치하고 빌드한다. flow는 웹과 동일하다.
+
+**AAR**: Android Archive (Java Class + Resource)
+
+**JAR**: Java Archive (Only Java Class)
+
+![](https://velog.velcdn.com/images/alsanrlf/post/8e2d8b57-2605-41ae-a86a-9459749e9d21/image.png)
+
+위 그림에서 Compilers 라고 퉁쳤지만 자세히 보면 Factory 패턴으로 파일을 컴파일 한다.
+
+![](https://velog.velcdn.com/images/alsanrlf/post/00e3bb06-d10c-45b1-b0e5-07d4c551de2e/image.png)
+
+이런 과정들을 관리 해주는게 Gradle 이다.
+
+![](https://velog.velcdn.com/images/alsanrlf/post/29434b49-941a-49a8-a7f4-c78b6bc685ce/image.png)
+
+## ios
+
+### ios 폴더 분석
+
+- **`Podfile`**: ios의 dependencies를 관리하는 파일이다. 웹은 package.json 파일을 npm으로 관리하고 node_modules에 설치하는데 ios는 Podfile을 CocoaPods으로 관리하고 Pods폴더에 설치한다.
+- **`<ProjectName>.xcworkspace`**
+- **`<ProjectName>.xcodeproj`**
+  workspace는 proj의 집합이다. xcode에서 프로젝트를 init 하면 proj만 있는데 외부 라이브러리를 추가하면 그때부터 workspace를 사용해야 한다. android의 root build.gradle과 app의 build.gradle과 같은 로직이다.
+
+`<ProjectName>/`
+
+- **`AppDelegate.m` or `AppDelegate.swift`**: controller. 앱의 life cycle을 관리.
+- **`Info.plist`**: 설정, 권한 , id 등등의 정보를 관리하는 파일이다. AndroidMenifest.xml에 대응한다.
+- **`Assets.xcassets/`**: 아이콘, 스플래시, 이미지 등의 파일들 모아놓는데
+- **`main.m` or `main.swift`**: app 진입 지점.
+
+### Build
+
+```
+.m, .swift → compile → link → app
+
+```
+
+옆의 이미지는 코드의 관점에서 어떻게 앱이 되는지 추상화한 그림이다.
+
+ios도 android도 빌드 과정은 file → compile → link 로 요약이 가능하다.
+
+컴파일 과정을 좀더 자세히 보자
+
+![](https://velog.velcdn.com/images/alsanrlf/post/65095fe9-8a94-4c22-9b46-4a716333787f/image.png)
+
+LLVM(Low Level Virtual Machine) 은 컴파일 관리 툴이다. 우리의 코드를 한번에 머신코드로 컴파일 하지 않고 Front, Middle, Back 3파트로 나눠서 3단 컴파일을 진행한다.
+
+Front End 에는 컴파일러가 위치하며 여러 언어에 맞게 대응하는 컴파일러를 사용해 code → AST → IR 파일을 단계적으로 컴파일 한다. 이때 사용하는 컴파일러에 Clang, swiftC 등이 있다.
+
+Middle End에서는 IR 코드를 최적화 한다. 불필요한 코드 제거 뭐 이런걸 진행한다고 한다.
+
+Back End에서는 Machine Code로 변환한다.
+
+## Build Optimize
+
+Xcode가 빌드 과정을 시각화 해서 잘 보여줘서 Xcode를 사용해 빌드 최적화 과정에 대해 조사했다.
+
+### Increment build
+
+점진적 빌드라고 거대한 빌드과정을 여러 task로 잘게 쪼개고 그 task 의 빌드 output을 캐싱 하는것을 말한다.
+
+캐싱은 불필요한 빌드를 줄여 속도를 개선해주지만 알수없는 에러, 코드 적용 안됨 등의 이슈도 만든다.
+
+Xcode에서 빌드에러가 발생했을때 캐시 삭제하면 해결될 확률이 90% 이상이다.
+
+Product > Clean Build Folder & Library/Developer/Xcode/DerivedData 안의 파일들을 제거하면 된다.
+
+아래 Xcode 프로젝트는 Xcode에서 Objective-c 로 생성한 신규 프로젝트로 빈화면을 보여주는 앱이다.
+
+no cache build
+
+![](https://velog.velcdn.com/images/alsanrlf/post/97e444ab-2b54-49e7-83a0-e0bc1dc96340/image.png)
+
+캐시가 없는 상태에서 빌드시 1.7s 걸렸다.
+
+그중에서도 SceneDelegate.m 파일을 컴파일 하는데 1.3s 가 소요되었다.
+
+cached build
+
+![](https://velog.velcdn.com/images/alsanrlf/post/ee323889-e61e-4a9b-98ba-01c3054b8c16/image.png)
+
+캐시 데이터를 사용해서 빌드시 0.5s 걸렸다.
+
+SceneDelegate.m 파일을 컴파일 하는데 0.1s 가 걸렸다.
+
+반면에 회사 앱을 빌드할때는 차이가 없었다.
+
+캐시 데이터 관련 설정이 되어있나본데 어딘지 찾지는 못하겠다. 빌드할 때 캐시데이터는 쓰지도 않으면서 에러는 만들고 있다.
+
+### Parallelize Build
+
+**병렬화**
+
+앱을 빌드할때 수많은 파일들은 서로에게 의존성을 가진다. dependency graph를 순서대로 꼬이지 않게 그러나 동시에 병렬적으로 task를 수행한다.
+
+![](https://velog.velcdn.com/images/alsanrlf/post/4cf9840e-3b8a-4954-84bc-159fb4c70eae/image.png)
+
+![](https://velog.velcdn.com/images/alsanrlf/post/4358f4e9-02a6-4c58-8311-defa6e40b83f/image.png)
+
+---
+
+**not Parallelized**
+
+MacBook Air 15(M2, 2023)
+
+**4코어** Apple Avalanche 3.49 GHz
+
+**4코어** Apple Blizzard 2.42 GHz
+
+218.7 seconds
+
+![](https://velog.velcdn.com/images/alsanrlf/post/f169491c-5fb1-4018-aa5e-edd28e7ae575/image.png)
+
+8줄이다!
+
+MacBook Pro 16(M1, 2021)
+
+**8코어** Apple Firestorm 3.23 GHz
+
+**2코어** Apple Icestorm 2.06 GHz
+
+204.7 seconds
+
+![](https://velog.velcdn.com/images/alsanrlf/post/52eb2e90-a632-4449-9ccd-953ee6821db6/image.png)
+
+정확히 10줄이다!!!!
+
+컴퓨터의 CPU코어 갯수대로 빌드가 진행된다.
+
+---
+
+**Parallized Build**
+
+MacBook Air 15(M2, 2023)
+
+174.6 seconds
+
+![](https://velog.velcdn.com/images/alsanrlf/post/aa5259c5-329d-4d22-b823-201d9d23643d/image.png)
+
+MacBook Pro 16(M1, 2021)
+
+130.2 seconds
+
+![](https://velog.velcdn.com/images/alsanrlf/post/8fad5ae3-e745-4eab-a58c-f97b39d8f3c7/image.png)
+
+전체적인 시각화 결과물을 보면 Paralle 한다는게 무슨 의미인지 알것같다.
+
+같은 색의 블럭은 같은 library를 의미한다.
+
+![](https://velog.velcdn.com/images/alsanrlf/post/ed0dfd99-cb5f-4e91-a274-7d3c52103b4f/image.png)
+
+---
+
+이 글은 2024년 11월 13일에 작성되었다.
+
+2022년 입사 초기만 해도 2018년 인텔 맥북을 사용해서 빌드 하는데 30분씩 걸렸는데 M1칩으로 바꾸고 난 뒤에는 3분이면 되기도 하고 그마저도 Xcode Cloud로 CI/CD 세팅하고 나서는 내 컴퓨터에서 빌드를 하지 않게 되었다. Expo EAS같은거 써도 그럴것이다. 이제 로컬에서 빌드 하는 시대는 지난것이다.
+
+내가 공부했던 내용들이 사장되는것 같아서 슬퍼진다.
+
+신세진분들
+
+[Gradle Docs](https://docs.gradle.org/current/userguide/userguide.html)
+
+[Android Developers Docs](https://developer.android.com/build?hl=ko)
+
+[Android 어디까지 아세요](https://medium.com/mj-studio/%EC%95%88%EB%93%9C%EB%A1%9C%EC%9D%B4%EB%93%9C-%EC%96%B4%EB%94%94%EA%B9%8C%EC%A7%80-%EC%95%84%EC%84%B8%EC%9A%94-1-build-process-df6a69f73337)
+
+[[Xcode Build System] Build 버튼을 눌렀을 때 어떤 일이 일어날까?](https://cnoo.tistory.com/71)
+
+[WWDC 18 Building Faster in Xcode](https://developer.apple.com/videos/play/wwdc2018/408)
+
+[WWDC 22 Demystify parallelization in Xcode builds](https://developer.apple.com/videos/play/wwdc2022/110364/)
+
+[WWDC18 Behind the Scenes of the Xcode Build Process 정리글](https://levenshtein.tistory.com/617)
