@@ -6,8 +6,9 @@ interface Props {
 }
 
 const SandBox = ({ slug }: Props) => {
-  const Atraction = dynamic(() => import(`@/blog/playground/${slug}/main.tsx`));
-  return <Atraction />;
+  // const Atraction = dynamic(() => import(`@/blog/playground/${slug}/main.tsx`));
+  // return <Atraction />;
+  return <></>;
 };
 
 export default SandBox;
